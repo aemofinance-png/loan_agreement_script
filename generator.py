@@ -215,8 +215,11 @@ def generate_agreement(data) -> bytes:
         ' equal monthly installments of $' + f'{data.monthlyPayment:,.2f}.',
         'Payments are due between the 28th - 30th of each month.',
         'Late payments may attract a penalty fee as determined by AEMO Finance.',
-        'The borrower may request early repayment subject to applicable terms.',
-        'This agreement is governed by applicable local laws.',
+        'In the event of default, where any payment remains unpaid for more than 30 days, AEMO Finance may declare the entire remaining balance immediately due and payable.',
+        'The Borrower agrees to pay all costs of collection, including reasonable attorney fees and legal expenses, incurred by AEMO Finance in enforcing this agreement.',
+        'The Borrower may prepay the principal balance of this loan, in whole or in part, at any time without penalty.',
+        'If any provision of this agreement is held to be invalid or unenforceable, the remaining provisions shall continue to be valid and enforceable.',
+        'This document constitutes the entire agreement between the parties. No oral promises or representations have been made that are not contained in this written agreement.',
         'AEMO Finance reserves the right to amend terms with prior written notice to the borrower.',
     ]
     story += [section_bar('TERMS & CONDITIONS'), Spacer(1, 5)]

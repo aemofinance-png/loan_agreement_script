@@ -46,14 +46,14 @@ def generate_agreement(data) -> bytes:
             balance = round(balance - princ, 2)
             due = first_date + relativedelta(months=i - 1)
             rows.append((i, due.strftime('%b %d, %Y'),
-                         '$' + f'{pmt:,.2f}',
-                         '$' + f'{princ:,.2f}',
-                         '$' + f'{interest:,.2f}',
-                         '$' + f'{max(balance, 0):,.2f}'))
+                         data.currencySymbol + f'{pmt:,.2f}',
+                         data.currencySymbol + f'{princ:,.2f}',
+                         data.currencySymbol + f'{interest:,.2f}',
+                         data.currencySymbol + f'{max(balance, 0):,.2f}'))
         return rows
 
     schedule       = build_schedule()
-    total_repay    = round(sum(float(r[2].replace('$','').replace(',','')) for r in schedule), 2)
+    total_repay    = round(sum(float(r[2].replace(data.currencySymbol,'').replace(',','')) for r in schedule), 2)
     total_interest = round(total_repay - data.loanAmount, 2)
     last_date      = (first_date + relativedelta(months=data.loanTermMonths - 1)).strftime('%B %d, %Y')
 
@@ -146,13 +146,13 @@ def generate_agreement(data) -> bytes:
 
     # loan summary
     ls_data = [
-        ['Principal Loan Amount:',        '$' + f'{data.loanAmount:,.2f}'],
+        ['Principal Loan Amount:',        data.currencySymbol + f'{data.loanAmount:,.2f}'],
         ['Annual Percentage Rate (APR):', f'{data.annualRatePct:.2f}%'],
         ['Loan Term:',                    f'{data.loanTermMonths} Months'],
         ['Repayment Frequency:',          'Monthly'],
-        ['Monthly Installment:',          '$' + f'{data.monthlyPayment:,.2f}'],
-        ['Total Repayment Amount:',       '$' + f'{total_repay:,.2f}'],
-        ['Total Interest Payable:',       '$' + f'{total_interest:,.2f}'],
+        ['Monthly Installment:',          data.currencySymbol + f'{data.monthlyPayment:,.2f}'],
+        ['Total Repayment Amount:',       data.currencySymbol + f'{total_repay:,.2f}'],
+        ['Total Interest Payable:',       data.currencySymbol + f'{total_interest:,.2f}'],
     ]
     lt = Table(ls_data, colWidths=[2.8*inch, W - 2.8*inch])
     lt.setStyle(TableStyle([
@@ -173,7 +173,7 @@ def generate_agreement(data) -> bytes:
     # repayment framework
     story += [section_bar('REPAYMENT FRAMEWORK'), Spacer(1, 5),
               Paragraph(
-                  'Monthly deductions of <b>$' + f'{data.monthlyPayment:,.2f}' +
+                  'Monthly deductions of <b>' + data.currencySymbol + f'{data.monthlyPayment:,.2f}' +
                   '</b> will be debited between the <b>28th - 30th of each month</b>, commencing '
                   '<b>' + first_date.strftime('%B %d, %Y') + '</b>, through to <b>' + last_date + '</b>. '
                   'All payments are processed through AEMO Finance with the full knowledge and approval of the client.',
@@ -212,14 +212,11 @@ def generate_agreement(data) -> bytes:
     # T&Cs
     tcs = [
         'The borrower agrees to repay the loan in ' + str(data.loanTermMonths) +
-        ' equal monthly installments of $' + f'{data.monthlyPayment:,.2f}.',
+        ' equal monthly installments of ' + data.currencySymbol + f'{data.monthlyPayment:,.2f}.',
         'Payments are due between the 28th - 30th of each month.',
         'Late payments may attract a penalty fee as determined by AEMO Finance.',
-        'In the event of default, where any payment remains unpaid for more than 30 days, AEMO Finance may declare the entire remaining balance immediately due and payable.',
-        'The Borrower agrees to pay all costs of collection, including reasonable attorney fees and legal expenses, incurred by AEMO Finance in enforcing this agreement.',
-        'The Borrower may prepay the principal balance of this loan, in whole or in part, at any time without penalty.',
-        'If any provision of this agreement is held to be invalid or unenforceable, the remaining provisions shall continue to be valid and enforceable.',
-        'This document constitutes the entire agreement between the parties. No oral promises or representations have been made that are not contained in this written agreement.',
+        'The borrower may request early repayment subject to applicable terms.',
+        'This agreement is governed by applicable local laws.',
         'AEMO Finance reserves the right to amend terms with prior written notice to the borrower.',
     ]
     story += [section_bar('TERMS & CONDITIONS'), Spacer(1, 5)]

@@ -23,6 +23,7 @@ class LoanRequest(BaseModel):
     firstPaymentDate: str  # YYYY-MM-DD
     agreementDate: str     # e.g. "March 08, 2026"
     referenceNo: str
+    currencySymbol: str
 
 @app.post("/generate-agreement")
 def generate(data: LoanRequest):

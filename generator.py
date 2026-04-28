@@ -11,10 +11,16 @@ import io
 import base64
 from reportlab.lib.utils import ImageReader
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, HRFlowable, Image
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Register Arial font to support international currency symbols (Naira, etc.)
+pdfmetrics.registerFont(TTFont('Arial', os.path.join(BASE_DIR, 'Arial.ttf')))
+pdfmetrics.registerFont(TTFont('Arial-Bold', os.path.join(BASE_DIR, 'Arial-Bold.ttf')))
+
 LOGO_PATH = os.path.join(BASE_DIR, 'aemo_logo.png')
 LOGO_B64 = base64.b64encode(open(LOGO_PATH, 'rb').read()).decode('utf-8')
 # colours
@@ -59,14 +65,14 @@ def generate_agreement(data) -> bytes:
 
     # styles
     def S(name, **kw): return ParagraphStyle(name, **kw)
-    sTitle  = S('sTitle',  fontSize=16, fontName='Helvetica-Bold', textColor=NAVY, alignment=TA_CENTER, spaceAfter=4)
-    sSub    = S('sSub',    fontSize=9,  fontName='Helvetica', textColor=GREY, alignment=TA_CENTER)
-    sHead   = S('sHead',   fontSize=10, fontName='Helvetica-Bold', textColor=WHITE)
-    sNorm   = S('sNorm',   fontSize=9,  fontName='Helvetica', textColor=colors.black, leading=13, alignment=TA_JUSTIFY)
-    sSmall  = S('sSmall',  fontSize=8,  fontName='Helvetica', textColor=GREY, leading=12, alignment=TA_JUSTIFY)
-    sRef    = S('sRef',    fontSize=8,  fontName='Helvetica-Bold', textColor=NAVY, alignment=TA_RIGHT)
-    sFooter = S('sFooter', fontSize=7.5, fontName='Helvetica', textColor=GREY, alignment=TA_CENTER)
-    sTC     = S('sTC',     fontSize=8.5, fontName='Helvetica', textColor=colors.black, leading=12, alignment=TA_JUSTIFY)
+    sTitle  = S('sTitle',  fontSize=16, fontName='Arial-Bold', textColor=NAVY, alignment=TA_CENTER, spaceAfter=4)
+    sSub    = S('sSub',    fontSize=9,  fontName='Arial', textColor=GREY, alignment=TA_CENTER)
+    sHead   = S('sHead',   fontSize=10, fontName='Arial-Bold', textColor=WHITE)
+    sNorm   = S('sNorm',   fontSize=9,  fontName='Arial', textColor=colors.black, leading=13, alignment=TA_JUSTIFY)
+    sSmall  = S('sSmall',  fontSize=8,  fontName='Arial', textColor=GREY, leading=12, alignment=TA_JUSTIFY)
+    sRef    = S('sRef',    fontSize=8,  fontName='Arial-Bold', textColor=NAVY, alignment=TA_RIGHT)
+    sFooter = S('sFooter', fontSize=7.5, fontName='Arial', textColor=GREY, alignment=TA_CENTER)
+    sTC     = S('sTC',     fontSize=8.5, fontName='Arial', textColor=colors.black, leading=12, alignment=TA_JUSTIFY)
 
     W = letter[0] - 1.3*inch
 
@@ -83,8 +89,8 @@ def generate_agreement(data) -> bytes:
     def kv_table(rows, col1=1.8*inch):
         t = Table(rows, colWidths=[col1, W - col1])
         t.setStyle(TableStyle([
-            ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'),
-            ('FONTNAME', (1,0), (1,-1), 'Helvetica'),
+            ('FONTNAME', (0,0), (0,-1), 'Arial-Bold'),
+            ('FONTNAME', (1,0), (1,-1), 'Arial'),
             ('FONTSIZE', (0,0), (-1,-1), 9),
             ('TEXTCOLOR', (0,0), (0,-1), NAVY),
             ('ROWBACKGROUNDS', (0,0), (-1,-1), [LIGHT, WHITE]),
@@ -156,11 +162,11 @@ def generate_agreement(data) -> bytes:
     ]
     lt = Table(ls_data, colWidths=[2.8*inch, W - 2.8*inch])
     lt.setStyle(TableStyle([
-        ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'),
-        ('FONTNAME', (1,0), (1,-1), 'Helvetica'),
+        ('FONTNAME', (0,0), (0,-1), 'Arial-Bold'),
+        ('FONTNAME', (1,0), (1,-1), 'Arial'),
         ('FONTSIZE', (0,0), (-1,-1), 9),
         ('TEXTCOLOR', (0,0), (0,-1), NAVY),
-        ('FONTNAME', (1,4), (1,6), 'Helvetica-Bold'),
+        ('FONTNAME', (1,4), (1,6), 'Arial-Bold'),
         ('TEXTCOLOR', (1,4), (1,6), RED),
         ('ROWBACKGROUNDS', (0,0), (-1,-1), [LIGHT, WHITE]),
         ('TOPPADDING', (0,0), (-1,-1), 5),
@@ -190,15 +196,15 @@ def generate_agreement(data) -> bytes:
     at.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), NAVY),
         ('TEXTCOLOR', (0,0), (-1,0), WHITE),
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTNAME', (0,0), (-1,0), 'Arial-Bold'),
         ('FONTSIZE', (0,0), (-1,0), 8),
         ('ALIGN', (0,0), (-1,0), 'CENTER'),
-        ('FONTNAME', (0,1), (-1,-1), 'Helvetica'),
+        ('FONTNAME', (0,1), (-1,-1), 'Arial'),
         ('FONTSIZE', (0,1), (-1,-1), 7.5),
         ('ALIGN', (0,1), (1,-1), 'CENTER'),
         ('ALIGN', (2,1), (-1,-1), 'RIGHT'),
         ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor('#EAF0FF')),
-        ('FONTNAME', (0,-1), (-1,-1), 'Helvetica-Bold'),
+        ('FONTNAME', (0,-1), (-1,-1), 'Arial-Bold'),
         ('TEXTCOLOR', (5,1), (5,-1), NAVY),
         ('TOPPADDING', (0,0), (-1,-1), 4),
         ('BOTTOMPADDING', (0,0), (-1,-1), 4),
